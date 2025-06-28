@@ -140,7 +140,7 @@ impl<I2C> Vcnl4040<I2C>
     }
 
     /// Initialize the sensor and verify device ID
-    pub async fn init(&mut self, proximity: bool, white_light: bool, ambient_light: bool, highres_proximity: bool) -> Result<(), Error<I2C::Error>> {
+    pub async fn init(&mut self, enable_all: bool) -> Result<(), Error<I2C::Error>> {
         // Verify device ID - VCNL4040 should return 0x0186
         let device_id = self.read_register(registers::DEVICE_ID).await?;
         if device_id != 0x0186 {
@@ -148,16 +148,10 @@ impl<I2C> Vcnl4040<I2C>
         }
 
         // Initialize with default settings
-        if proximity {
+        if enable_all {
             self.enable_proximity(true).await?;
-        }
-        if white_light {
             self.enable_white_light(true).await?;
-        }
-        if ambient_light {
             self.enable_ambient_light(true).await?;
-        }
-        if highres_proximity {
             self.set_proximity_high_resolution(true).await?;
         }
         Ok(())
